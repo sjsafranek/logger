@@ -21,11 +21,12 @@ func (w writer) Write(b []byte) (n int, err error) {
 }
 
 const (
-	red    = "\033[0;31;1m"
+	red    = "\033[0;31m"
+	green  = "\033[0;32m"
 	yellow = "\033[0;33m"
 	white  = "\033[0;37m"
 	cyan   = "\033[0;36m"
-	blue   = "\033[0;34;1m"
+	blue   = "\033[0;34m"
 	end    = "\033[0m"
 )
 
@@ -34,17 +35,30 @@ func init() {
 }
 
 type Logger struct {
-	T, D, I, W, E *log.Logger
-	t, d, i, w, e bool
+	T *log.Logger
+	D *log.Logger
+	I *log.Logger
+	W *log.Logger
+	E *log.Logger
+	t bool
+	d bool
+	i bool
+	w bool
+	e bool
 }
 
 func New() (l *Logger) {
 	l = &Logger{
-		T: log.New(os.Stdout, "[trace]\t", log.Lmicroseconds|log.Lshortfile),
-		D: log.New(os.Stdout, "[debug]\t", log.Ltime|log.Lshortfile),
-		I: log.New(os.Stdout, "[info]\t", log.Ldate|log.Ltime),
-		W: log.New(os.Stdout, "[warn]\t", log.Ldate|log.Ltime),
-		E: log.New(os.Stdout, "[error]\t", log.Ldate|log.Ltime|log.Lshortfile),
+		// T: log.New(os.Stdout, "[TRACE]\t", log.Lmicroseconds|log.Lshortfile),
+		// D: log.New(os.Stdout, "[DEBUG]\t", log.Ltime|log.Lshortfile),
+		// I: log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime),
+		// W: log.New(os.Stdout, "[WARN]\t", log.Ldate|log.Ltime),
+		// E: log.New(os.Stdout, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile),
+		T: log.New(os.Stdout, "[TRACE] ", log.Lshortfile),
+		D: log.New(os.Stdout, "[DEBUG] ", log.Lshortfile),
+		I: log.New(os.Stdout, "[INFO]  ", log.Lshortfile),
+		W: log.New(os.Stdout, "[WARN]  ", log.Lshortfile),
+		E: log.New(os.Stdout, "[ERROR] ", log.Lshortfile),
 		t: true,
 		d: true,
 		i: true,
@@ -52,11 +66,11 @@ func New() (l *Logger) {
 		e: true,
 	}
 	if runtime.GOOS == "linux" {
-		l.T.SetPrefix(blue + l.T.Prefix() + end)
-		l.D.SetPrefix(cyan + l.D.Prefix() + end)
-		l.I.SetPrefix(white + l.I.Prefix() + end)
-		l.W.SetPrefix(yellow + l.W.Prefix() + end)
-		l.E.SetPrefix(red + l.E.Prefix() + end)
+		l.T.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + green + l.T.Prefix() + end)
+		l.D.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + cyan + l.D.Prefix() + end)
+		l.I.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + blue + l.I.Prefix() + end)
+		l.W.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + yellow + l.W.Prefix() + end)
+		l.E.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + red + l.E.Prefix() + end)
 	}
 	return
 }
@@ -67,6 +81,10 @@ func SetOutput(w io.Writer) {
 
 func SetLevel(s string) {
 	l.SetLevel(s)
+}
+
+func formattedPID() string {
+	return fmt.Sprintf(" [%v] ", os.Getpid())
 }
 
 func (l *Logger) SetOutput(w io.Writer) {
