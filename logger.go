@@ -49,11 +49,6 @@ type Logger struct {
 
 func New() (l *Logger) {
 	l = &Logger{
-		// T: log.New(os.Stdout, "[TRACE]\t", log.Lmicroseconds|log.Lshortfile),
-		// D: log.New(os.Stdout, "[DEBUG]\t", log.Ltime|log.Lshortfile),
-		// I: log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime),
-		// W: log.New(os.Stdout, "[WARN]\t", log.Ldate|log.Ltime),
-		// E: log.New(os.Stdout, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile),
 		T: log.New(os.Stdout, "[TRACE] ", log.Lshortfile),
 		D: log.New(os.Stdout, "[DEBUG] ", log.Lshortfile),
 		I: log.New(os.Stdout, "[INFO]  ", log.Lshortfile),
@@ -83,9 +78,6 @@ func SetLevel(s string) {
 	l.SetLevel(s)
 }
 
-func formattedPID() string {
-	return fmt.Sprintf(" [%v] ", os.Getpid())
-}
 
 func (l *Logger) SetOutput(w io.Writer) {
 	l.T.SetOutput(w)
@@ -161,30 +153,34 @@ func Error(v ...interface{}) {
 
 func (l *Logger) Tracef(format string, v ...interface{}) {
 	if l.t {
-		l.T.Output(3, fmt.Sprintf(format, v...))
+		l.T.Output(3, printPid() + fmt.Sprintf(format, v...))
 	}
 }
 
 func (l *Logger) Debugf(format string, v ...interface{}) {
 	if l.d {
-		l.D.Output(3, fmt.Sprintf(format, v...))
+		l.D.Output(3, printPid() + fmt.Sprintf(format, v...))
 	}
 }
 
 func (l *Logger) Infof(format string, v ...interface{}) {
 	if l.i {
-		l.I.Output(3, fmt.Sprintf(format, v...))
+		l.I.Output(3, printPid() + fmt.Sprintf(format, v...))
 	}
 }
 
 func (l *Logger) Warnf(format string, v ...interface{}) {
 	if l.w {
-		l.W.Output(3, fmt.Sprintf(format, v...))
+		l.W.Output(3, printPid() + fmt.Sprintf(format, v...))
 	}
 }
 
 func (l *Logger) Errorf(format string, v ...interface{}) {
 	if l.e {
-		l.E.Output(3, fmt.Sprintf(format, v...))
+		l.E.Output(3, printPid() + fmt.Sprintf(format, v...))
 	}
+}
+
+func printPid() string {
+	return fmt.Sprintf("[PID-%v] ",os.Getpid())
 }
