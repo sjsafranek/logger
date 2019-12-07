@@ -1,3 +1,3 @@
-module github.com/schollz/logger
+module github.com/sjsafranek/logger
 
 go 1.12
