@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestTrace(t *testing.T) {
@@ -15,6 +16,7 @@ func TestTrace(t *testing.T) {
 	funcs := []func(...interface{}){Trace, Debug, Info, Warn, Error}
 	for i, s := range []string{"trace", "debug", "info", "warn", "error"} {
 		funcs[i](s)
+		time.Sleep(5000 * time.Nanosecond)
 		fmt.Print(buf.String())
 		if !strings.Contains(buf.String(), s) {
 			t.Error("bad " + s)
@@ -35,6 +37,7 @@ func TestLogging(t *testing.T) {
 		logger.SetLevel(levelName)
 		for i, s := range levels {
 			funcs[i](s)
+			time.Sleep(5000 * time.Nanosecond)
 			if i < level {
 				if buf.String() != "" {
 					t.Error("bad " + s)

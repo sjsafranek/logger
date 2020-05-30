@@ -17,7 +17,7 @@ type writer struct {
 }
 
 func (w writer) Write(b []byte) (n int, err error) {
-	return w.Writer.Write(append([]byte(time.Now().Format(w.timeFormat)), b...))
+	return w.Writer.Write(append([]byte(time.Now().UTC().Format(w.timeFormat)), b...))
 }
 
 const (
@@ -32,6 +32,7 @@ const (
 
 func init() {
 	l = New()
+	l.SetOutput(&writer{os.Stdout, "2006-01-02T15:04:05.999Z"})
 }
 
 type Logger struct {
@@ -61,11 +62,16 @@ func New() (l *Logger) {
 		e: true,
 	}
 	if runtime.GOOS == "linux" {
-		l.T.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + green + l.T.Prefix() + end)
-		l.D.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + cyan + l.D.Prefix() + end)
-		l.I.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + blue + l.I.Prefix() + end)
-		l.W.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + yellow + l.W.Prefix() + end)
-		l.E.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + red + l.E.Prefix() + end)
+		// l.T.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + green + l.T.Prefix() + end)
+		// l.D.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + cyan + l.D.Prefix() + end)
+		// l.I.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + blue + l.I.Prefix() + end)
+		// l.W.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + yellow + l.W.Prefix() + end)
+		// l.E.SetPrefix(time.Now().UTC().Format("2006-01-02T15:04:05.999Z") + " " + red + l.E.Prefix() + end)
+		l.T.SetPrefix(" " + green + l.T.Prefix() + end)
+		l.D.SetPrefix(" " + cyan + l.D.Prefix() + end)
+		l.I.SetPrefix(" " + blue + l.I.Prefix() + end)
+		l.W.SetPrefix(" " + yellow + l.W.Prefix() + end)
+		l.E.SetPrefix(" " + red + l.E.Prefix() + end)
 	}
 	return
 }
